@@ -1,0 +1,2 @@
+C:/SLT project/SLT/Citizen_Care_System/Citizen_Care_System/android/app/.cxx/Debug/66h2g6y4/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/SLT project/SLT/Citizen_Care_System/Citizen_Care_System/android/app/.cxx/Debug/66h2g6y4/arm64-v8a/CMakeFiles/rebuild_cache.dir

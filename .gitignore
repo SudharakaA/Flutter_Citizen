@@ -1,0 +1,30 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+
+# Build outputs
+/build/
+**/ios/Flutter/.last_build_id
+**/android/.gradle/
+
+# APK / IPA / other binaries
+*.apk
+*.aab
+*.ipa
+
+# IDE specific
+.idea/
+.vscode/
+*.iml
+
+# macOS / Xcode
+DerivedData/
+*.xcuserstate
+*.xcworkspace
+Pods/
+Podfile.lock
+
+# Misc
+*.log

@@ -1,0 +1,387 @@
+import 'package:citizen_care_system/admin%20_component/citizen_service_task/download_dialog.dart';
+import 'package:citizen_care_system/admin_pages/training_pages/training_request_pages/add_training_request.dart';
+import 'package:citizen_care_system/admin_pages/training_pages/training_request_pages/view_training_request_details.dart';
+import 'package:citizen_care_system/component/admin_circle_menu/fab_menu.dart';
+import 'package:citizen_care_system/component/admin_circle_menu/hover_tap_button.dart';
+import 'package:citizen_care_system/component/custom_app_bar.dart';
+import 'package:citizen_care_system/component/custom_back_button.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class TrainingRequestPage extends StatefulWidget {
+  final List<String>? selectedServiceType;
+  final String? selectedRequestType;
+  final DateTime? startDate;
+  final DateTime? endDate;
+
+  const TrainingRequestPage({
+    super.key,
+    this.selectedServiceType,
+    this.selectedRequestType,
+    this.startDate,
+    this.endDate, 
+  });
+
+  @override
+  State<TrainingRequestPage> createState() => _TrainingRequestPageState();
+}
+
+class _TrainingRequestPageState extends State<TrainingRequestPage> {
+  List<Map<String, dynamic>> requestData = [];
+  int? selectedRowIndex;
+  TextEditingController searchController = TextEditingController();
+  String searchQuery = '';
+  bool hasFiltersApplied = false;
+
+  List<Map<String, dynamic>> dummyRequestData = [
+    {
+      'requestedAt': '2025-03-19',
+      'trainingProgramme': 'Monetary regulations',
+      'resourcePerson': 'John Doe',
+      'lastActionAt': '2025-03-20',
+      'currentStatus': 'Requested',
+    },
+    {
+      'requestedAt': '2025-04-20',
+      'trainingProgramme': 'Audit Training',
+      'resourcePerson': 'Sandun',
+      'lastActionAt': '2025-04-22',
+      'currentStatus': 'Rejected',
+    },
+    {
+      'requestedAt': '2025-02-12',
+      'trainingProgramme': 'Financial Management',
+      'resourcePerson': 'Kasun',
+      'lastActionAt': '2025-02-15',
+      'currentStatus': 'Allocated',
+    },
+    {
+      'requestedAt': '2025-01-15',
+      'trainingProgramme': 'State Finance',
+      'resourcePerson': 'Nimal',
+      'lastActionAt': '2025-01-18',
+      'currentStatus': 'Participated',
+    },
+    {
+      'requestedAt': '2025-05-10',
+      'trainingProgramme': 'Computer Training',
+      'resourcePerson': 'Kamal',
+      'lastActionAt': '2025-01-10',
+      'currentStatus': 'Requested',
+    },
+  ];
+
+  final List<String> columnLabels = [
+    'Requested At',
+    'Training Programme',
+    'Resource Person',
+    'Last Action At',
+    'Current Status',
+    'Actions',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfFiltersApplied();
+    _filterData();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _checkIfFiltersApplied() {
+    hasFiltersApplied = (widget.selectedServiceType != null && widget.selectedServiceType!.isNotEmpty) ||
+        widget.selectedRequestType != null ||
+        widget.startDate != null ||
+        widget.endDate != null;
+  }
+
+  void _filterData() {
+    // Only show data if filters have been applied (coming from view page)
+    if (!hasFiltersApplied && searchQuery.isEmpty) {
+      requestData = [];
+      return;
+    }
+
+    requestData = dummyRequestData.where((data) {
+      // Service Type filter - check if training programme matches any selected service type
+      final matchesServiceType = widget.selectedServiceType == null ||
+          widget.selectedServiceType!.isEmpty ||
+          widget.selectedServiceType!.any((serviceType) => 
+            data['trainingProgramme']?.toLowerCase().contains(serviceType.toLowerCase()) ?? false);
+
+      // Request Type filter
+      final matchesRequestType = widget.selectedRequestType == null ||
+          widget.selectedRequestType == data['currentStatus'];
+
+      // Date filters
+      final requestedAt = DateTime.tryParse(data['requestedAt'] ?? '');
+      final matchesStartDate = widget.startDate == null ||
+          (requestedAt != null && requestedAt.isAfter(widget.startDate!.subtract(const Duration(days: 1))));
+      final matchesEndDate = widget.endDate == null ||
+          (requestedAt != null && requestedAt.isBefore(widget.endDate!.add(const Duration(days: 1))));
+
+      // Search filter
+      final matchesSearch = searchQuery.isEmpty ||
+          (data['trainingProgramme']?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false);
+
+      return matchesServiceType && matchesRequestType && matchesStartDate && matchesEndDate && matchesSearch;
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF80AF81),
+      appBar: const CustomAppBarWidget(leading: CustomBackButton()),
+      body: Container(
+        margin: EdgeInsets.all(screenWidth * 0.03),
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.04,
+          vertical: screenHeight * 0.02,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Training Request',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const Divider(
+              thickness: 1,
+              color: Colors.black38,
+              indent: 20,
+              endIndent: 20,
+            ),
+            SizedBox(height: screenHeight * 0.02),
+
+            // Search Bar - Only visible when filters are applied or there's data
+            if (hasFiltersApplied || requestData.isNotEmpty) ...[
+              TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search by Training Programme',
+                  hintStyle: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: screenWidth * 0.035,
+                  ),
+                  prefixIcon: const Icon(Icons.search),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                    borderSide: const BorderSide(color: Colors.black),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                    borderSide: const BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                    borderSide: const BorderSide(color: Colors.green, width: 2.0),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.02, 
+                    vertical: screenHeight * 0.015
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value;
+                    _filterData();
+                  });
+                },
+              ),
+              SizedBox(height: screenHeight * 0.03),
+            ],
+
+            // Data Table
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  showCheckboxColumn: false,
+                  headingRowColor: WidgetStateProperty.all(Colors.grey.shade300),
+                  columns: columnLabels
+                      .map((label) => DataColumn(
+                            label: Text(label,
+                                style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ))
+                      .toList(),
+                  rows: requestData.isEmpty
+                      ? [
+                          DataRow(cells: [
+                            const DataCell(Text('-')),
+                            const DataCell(Text('-')),
+                            const DataCell(Text('-')),
+                            const DataCell(Text('-')),
+                            const DataCell(Text('-')),
+                            DataCell(
+                              hasFiltersApplied 
+                                ? const Text('No matching data')
+                                : const Text('_')
+                            ),
+                          ])
+                        ]
+                      : List<DataRow>.generate(
+                          requestData.length,
+                          (index) {
+                            final row = requestData[index];
+                            final isSelected = selectedRowIndex == index;
+
+                            return DataRow(
+                              color: WidgetStateProperty.resolveWith<Color?>(
+                                (Set<WidgetState> states) {
+                                  return isSelected ? const Color.fromARGB(255, 202, 241, 156) : null;
+                                },
+                              ),
+                              cells: [
+                                DataCell(Text(row['requestedAt'] ?? '')),
+                                DataCell(Text(row['trainingProgramme'] ?? '')),
+                                DataCell(Text(row['resourcePerson'] ?? '')),
+                                DataCell(Text(row['lastActionAt'] ?? '')),
+                                DataCell(Text(row['currentStatus'] ?? '')),
+                                DataCell(Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.description, color: Colors.blue),
+                                      onPressed: () {
+                                        // Handle View Details
+                                        _showDetailsDialog(context, row);
+                                      },
+                                      tooltip: 'View Details',
+                                    ),
+                                  
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () {
+                                        // Handle Delete
+                                        _showDeleteDialog(context, index);
+                                      },
+                                      tooltip: 'Delete',
+                                    ),
+                                  ],
+                                )),
+                              ],
+                              onSelectChanged: (_) {
+                                setState(() {
+                                  selectedRowIndex = index;
+                                });
+                              },
+                            );
+                          },
+                        ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: CustomFabMenu(
+        menuItems: [
+          HoverTapButton(
+            icon: Icons.add,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddTrainingRequest()),
+              );
+            },
+          ),
+          HoverTapButton(
+            icon: Icons.view_list,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ViewTrainingRequestDetails()),
+              );
+            },
+          ),
+          HoverTapButton(
+            icon: Icons.download,
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => const DownloadDialog(),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDetailsDialog(BuildContext context, Map<String, dynamic> data) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Training Request Details'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Training Programme: ${data['trainingProgramme']}'),
+            Text('Requested At: ${data['requestedAt']}'),
+            Text('Resource Person: ${data['resourcePerson'] ?? 'Not assigned'}'),
+            Text('Last Action At: ${data['lastActionAt'] ?? 'No action taken'}'),
+            Text('Current Status: ${data['currentStatus']}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Training Request'),
+        content: const Text('Are you sure you want to delete this training request?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                requestData.removeAt(index);
+                if (selectedRowIndex == index) {
+                  selectedRowIndex = null;
+                }
+              });
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Training request deleted successfully')),
+              );
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+}

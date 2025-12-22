@@ -1,0 +1,2 @@
+C:/Users/My PC/Desktop/Citizen_Care_System/android/app/.cxx/Debug/2b2e4929/x86/CMakeFiles/edit_cache.dir
+C:/Users/My PC/Desktop/Citizen_Care_System/android/app/.cxx/Debug/2b2e4929/x86/CMakeFiles/rebuild_cache.dir

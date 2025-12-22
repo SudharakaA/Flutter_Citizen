@@ -1,0 +1,2 @@
+C:/Users/KaviRajasooriya/Desktop/citizen_care_app/Citizen_Care_System/android/app/.cxx/Debug/48193u2s/x86/CMakeFiles/edit_cache.dir
+C:/Users/KaviRajasooriya/Desktop/citizen_care_app/Citizen_Care_System/android/app/.cxx/Debug/48193u2s/x86/CMakeFiles/rebuild_cache.dir

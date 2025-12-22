@@ -1,0 +1,2 @@
+C:/Users/My PC/Documents/Projects/Citizen_Care_System/android/app/.cxx/Debug/g6v45321/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/My PC/Documents/Projects/Citizen_Care_System/android/app/.cxx/Debug/g6v45321/armeabi-v7a/CMakeFiles/rebuild_cache.dir
