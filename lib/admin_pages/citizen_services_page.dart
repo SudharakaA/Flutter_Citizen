@@ -7,6 +7,7 @@ import '../admin _component/citizen_service_task/services_list_container.dart';
 import '../admin_pages/citizen_services_pages/service_details_page.dart';
 import '../../model/service_data.dart';
 import 'citizen_services_pages/Subject_officer/subject_officer_page.dart';
+import 'citizen_services_pages/dashboard/service_dashboard_page.dart';
 
 class CitizenServicesPage extends StatelessWidget {
   final String accessToken;
@@ -101,11 +102,13 @@ class CitizenServicesPage extends StatelessWidget {
                     ),
                   );
                 } else if (item.title == 'SERVICE_DASHBOARD'.tr()) {
-                  // TODO: Implement navigation to Service Dashboard page
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('service_dashboard_not_implemented'.tr()),
-                      duration: const Duration(seconds: 2),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ServiceDashboardPage(
+                        accessToken: accessToken,
+                        citizenCode: citizenCode,
+                      ),
                     ),
                   );
                 }
